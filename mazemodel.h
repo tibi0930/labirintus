@@ -3,15 +3,24 @@
 
 #include <QObject>
 
+
 class MazeModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit MazeModel(QObject *parent = 0);
+    MazeModel();
 
-signals:
 
 public slots:
+    void newGame(int size);  //új játék
+
+private slots:
+    //void updateTime(); //időzítő eseménykezelője
+
+private:
+    //int time;
+    //QTimer* _timer;
+    int** table;
 };
 
 #endif // MAZEMODEL_H
