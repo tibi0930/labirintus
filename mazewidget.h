@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QTextStream>
 #include "mazemodel.h"
 
 class MazeWidget : public QWidget
@@ -16,10 +17,14 @@ class MazeWidget : public QWidget
 public:
     MazeWidget(QWidget *parent = 0);
     ~MazeWidget();
+
 private slots:
     void startNewGame();
+    void changeText();
 
 private:
+    bool onLoad();
+    QTextStream* _stream;
     QGridLayout* _tableLayout;
     QHBoxLayout* _toolLayout;
     QVBoxLayout* _mainLayout;

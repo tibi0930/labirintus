@@ -5,6 +5,7 @@ MazeModel::MazeModel()
     _timer = new QTimer();
     _timer->setInterval(1000);
     connect(_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
+
 }
 
 MazeModel::~MazeModel()
@@ -13,19 +14,16 @@ MazeModel::~MazeModel()
     delete _timer;
 }
 
-/*void MazeModel::pauseGame()
+void MazeModel::pauseGame()
 {
-    if (_previewTime > 0 || _gameTime >= _gameLength)
-        return;
-
     if (_timer->isActive()) // ha megy az időzítő
     {
-        messageChanged(trUtf8("Pihi van."));
+        //messageChanged(trUtf8("Pihi van."));
         _timer->stop(); // leállítjuk
     }
     else
         _timer->start(); // különben elindít
-}*/
+}
 
 void MazeModel::newGame(int size)
 {
@@ -37,9 +35,10 @@ void MazeModel::newGame(int size)
         table[i] = new int[size];
         for (int j = 0; j < size; ++j)
         {
-            table[i][j]= 0;
+            table[i][j]= -1;
         }
     }
+
 }
 
 int MazeModel::getField(int x, int y)
@@ -56,3 +55,5 @@ void MazeModel::updateTime()
     messageChanged(trUtf8("Eltelt idő: ") + QString::number(min) +
                         tr(":") + QString::number(sec));
 }
+
+

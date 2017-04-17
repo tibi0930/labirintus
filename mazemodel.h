@@ -13,11 +13,14 @@ public:
     MazeModel();
     ~MazeModel();
     int getField(int x, int y); // játékmező lekérdezése
+
 public slots:
     void newGame(int size);  //új játék
+    void pauseGame(); // játék szüneteltetése
 
 private slots:
     void updateTime(); //időzítő eseménykezelője
+
 
 signals:
     void messageChanged(QString message); //üzenetváltás eseménye
@@ -28,6 +31,8 @@ private:
     QLabel* _timeLabel;
     QTimer* _timer;
     int** table;
+
+
 };
 
 #endif // MAZEMODEL_H

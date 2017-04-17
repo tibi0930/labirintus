@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QMessageBox>
 #include "mazewidget.h"
 
@@ -16,13 +17,15 @@ MazeWidget::MazeWidget(QWidget *parent): QWidget(parent)
     _largeGameButton = new QPushButton(trUtf8("Nehéz játék (16)"));
     connect(_largeGameButton, SIGNAL(clicked()), this, SLOT(startNewGame()));
 
-    _pauseButton = new QPushButton(trUtf8("Szünet"));
+    //connect(_smallGameButton, SIGNAL(clicked()), this, SLOT(onLoad()));
+
+    _pauseButton = new QPushButton(trUtf8("Szünet "));
     _pauseButton->setEnabled(false);
-    //connect(_pauseButton, SIGNAL(clicked()), _model, SLOT(pauseGame()));
+    connect(_pauseButton, SIGNAL(clicked()), _model, SLOT(pauseGame()));
+    connect(_pauseButton, SIGNAL(clicked()), this, SLOT(changeText()));
 
     _messageLabel = new QLabel(trUtf8("Játék kezdése"));
     connect(_model, SIGNAL(messageChanged(QString)), _messageLabel, SLOT(setText(QString)));
-
 
     _toolLayout = new QHBoxLayout();
     _toolLayout->addWidget(_smallGameButton);
@@ -56,45 +59,77 @@ void MazeWidget::startNewGame(){
     }
     _buttonTable.clear();
 
-    if (QObject::sender() == _smallGameButton)  //attól föggően, mely gombra kattintunk
+    if(onLoad())
     {
-        _model->newGame(4);
-        _buttonTable.resize(4);
-        for(int i=0; i<4; ++i){
-            _buttonTable[i].resize(4);
+
+        //QMessageBox::information(this, "Text", "True!");
+        if (QObject::sender() == _smallGameButton)  //attól föggően, mely gombra kattintunk
+        {
+            _model->newGame(4);
+            _buttonTable.resize(4);
+            for(int i=0; i<4; ++i){
+                _buttonTable[i].resize(4);
+            }
         }
-    }
-    else if (QObject::sender() == _middleGameButton)
-    {
-        _model->newGame(8);
-        _buttonTable.resize(8);
-        for(int i=0; i<8; ++i){
-            _buttonTable[i].resize(8);
+        else if (QObject::sender() == _middleGameButton)
+        {
+            _model->newGame(8);
+            _buttonTable.resize(8);
+            for(int i=0; i<8; ++i){
+                _buttonTable[i].resize(8);
+            }
+        }
+        else
+        {
+            _model->newGame(16);
+            _buttonTable.resize(16);
+            for(int i=0; i<16; ++i){
+                _buttonTable[i].resize(16);
+            }
+        }
+        _pauseButton->setEnabled(true); //már lehet szüneteltetni
+
+        for (int i = 0; i < _buttonTable.size(); ++i)
+        {
+            for (int j = 0; j < _buttonTable[i].size(); ++j)
+            {
+                _buttonTable[i][j]= new QPushButton(this);
+                _buttonTable[i][j]->setFont(QFont("Times New Roman", 60, QFont::Bold));
+                _buttonTable[i][j]->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+                _tableLayout->addWidget(_buttonTable[i][j], i, j); // gombok felvétele az elhelyezésbe
+
+                //connect(buttonTable[i][j], SIGNAL(clicked()), this, SLOT(buttonClicked()));
+            }
         }
     }
     else
     {
-        _model->newGame(16);
-        _buttonTable.resize(16);
-        for(int i=0; i<16; ++i){
-            _buttonTable[i].resize(16);
-        }
+        QMessageBox::information(this, "Text",
+        "Sikertele file beolvasás. Új játékot a fenti gomb valamelyikével indíthat megfelelő file kiválasztásával!");
     }
-    _pauseButton->setEnabled(true); //már lehet szüneteltetni
-
-    for (int i = 0; i < _buttonTable.size(); ++i)
-    {
-        for (int j = 0; j < _buttonTable[i].size(); ++j)
-        {
-            _buttonTable[i][j]= new QPushButton(this);
-            _buttonTable[i][j]->setFont(QFont("Times New Roman", 60, QFont::Bold));
-            _buttonTable[i][j]->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-            _tableLayout->addWidget(_buttonTable[i][j], i, j); // gombok felvétele az elhelyezésbe
-
-            //connect(buttonTable[i][j], SIGNAL(clicked()), this, SLOT(buttonClicked()));
-        }
-    }
-
 }
 
+void MazeWidget::changeText()
+{
+    if(_pauseButton->text()=="Szünet ")
+        _pauseButton->setText(trUtf8("Folytat"));
+    else
+        _pauseButton->setText(trUtf8("Szünet "));
+}
 
+bool MazeWidget::onLoad()
+{
+    QString filename = QFileDialog::getOpenFileName(this,"Save doument",
+        QString(tr("/Users/tibi-macbook/Desktop/Qt/labirintus")), "*.txt" );
+        //QDir::currentPath()
+    QFile file( filename );
+    if(file.open(QIODevice::ReadOnly))
+    {
+        _stream = new QTextStream(&file);
+        return true;
+        //QString text = stream.readAll();
+
+        //QMessageBox::information(this, "Text", text);
+    }
+    else return false;
+}
