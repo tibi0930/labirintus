@@ -20,10 +20,12 @@ public:
 
 private slots:
     void startNewGame();
-    void changeText();
+    void buttonClicked();
+    void pauseGame();
 
 private:
     bool onLoad();
+    void torchLight();
     QTextStream* _stream;
     QGridLayout* _tableLayout;
     QHBoxLayout* _toolLayout;
